@@ -1,12 +1,13 @@
-import { useEffect } from 'react'
+import { useEffect, useContext } from 'react'
 // eslint-disable-next-line import/no-named-as-default
 import i18n from 'i18next'
 import dayjs from 'dayjs'
 import { dateLocales } from '@/locales'
-import { useAppSelector } from '@/store'
+import { StoreContext } from '@/contexts/StoreContext'
 
 function useLocale() {
-  const locale = useAppSelector((state) => state.locale.currentLang)
+  const { localeStore } = useContext(StoreContext)
+  const locale = localeStore.currentLocale
 
   useEffect(() => {
     const formattedLang = locale.replace(/-([a-z])/g, function (g:any) {

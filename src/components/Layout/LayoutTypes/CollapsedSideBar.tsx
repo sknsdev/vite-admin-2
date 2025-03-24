@@ -1,19 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {Card, Center, Stack} from '@mantine/core';
-import {
-  IconLogout,
-} from '@tabler/icons-react';
-import classes from './CollapsedSideBar.module.css';
-import navigationConfig from "@/configs/navigation.config";
-import {Link, useLocation, useNavigate} from "react-router-dom";
-import Views from "@/components/Layout/Views";
-import useAuth from "@/utils/hooks/useAuth";
-import CollapsedSideBarUserPopOver from "@/components/UserPopOver/CollapsedSideBarUserPopOver";
-import AuthorityCheck from '@/route/AuthorityCheck';
-import {useAppSelector} from "@/store";
+import React, { useEffect, useState } from 'react'
+import { Card, Center, Stack } from '@mantine/core'
+import { IconLogout } from '@tabler/icons-react'
+import classes from './CollapsedSideBar.module.css'
+import navigationConfig from "@/configs/navigation.config"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import Views from "@/components/Layout/Views"
+import useAuth from "@/utils/hooks/useAuth"
+import CollapsedSideBarUserPopOver from "@/components/UserPopOver/CollapsedSideBarUserPopOver"
+import AuthorityCheck from '@/route/AuthorityCheck'
+import { useRootStore } from '@/store/hook'
 
 function CollapsedSideBarBottomContent() {
-  const {signOut} = useAuth()
+  const { signOut } = useAuth()
   return (
     <div className={classes.linkWrapper}>
       <div className={classes.link}>
@@ -29,15 +27,16 @@ function CollapsedSideBarBottomContent() {
 }
 
 function CollapsedSideBarContent() {
-  const [active, setActive] = useState('');
-  const navigate = useNavigate();
-  const location = useLocation();
-  const userAuthority = useAppSelector((state) => state.auth.user.role)
+  const [active, setActive] = useState('')
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { authStore } = useRootStore()
+  const userAuthority = authStore.user.role
 
   useEffect(() => {
-    const currentPath = location.pathname.split('/')[1];
-    setActive(currentPath);
-  }, [location.pathname]);
+    const currentPath = location.pathname.split('/')[1]
+    setActive(currentPath)
+  }, [location.pathname])
 
   const links = navigationConfig.map((item) => (
     <AuthorityCheck userAuthority={userAuthority ? userAuthority : []} authority={item.authority}>
@@ -47,14 +46,14 @@ function CollapsedSideBarContent() {
         to={item.path}
         key={item.title}
         onClick={(event) => {
-          event.preventDefault();
-          navigate(item.path);
+          event.preventDefault()
+          navigate(item.path)
         }}
       >
         <item.icon className={classes.linkIcon} stroke={1.5}/>
       </Link>
     </AuthorityCheck>
-  ));
+  ))
 
   return (
     <nav className={classes.navbar}>
@@ -106,5 +105,4 @@ export default function CollapsedSideBar() {
       </div>
     </>
   )
-
 }

@@ -1,17 +1,16 @@
 import { Suspense } from 'react'
 import appConfig from '@/configs/app.config'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAppSelector } from '@/store'
-import {protectedRoutes, publicRoutes} from "@/configs/routes.config";
-import ProtectedRoute from "@/route/ProtectedRoute";
-import AppRoute from "@/route/AppRoute";
-import AuthorityGuard from "@/route/AuthorityGuard";
-import PublicRoute from "@/route/PublicRoute";
-import LoadingScreen from "@/components/LoadingScreen/LoadingScreen";
+import { protectedRoutes, publicRoutes } from "@/configs/routes.config"
+import ProtectedRoute from "@/route/ProtectedRoute"
+import AppRoute from "@/route/AppRoute"
+import AuthorityGuard from "@/route/AuthorityGuard"
+import PublicRoute from "@/route/PublicRoute"
+import LoadingScreen from "@/components/LoadingScreen/LoadingScreen"
+import { useRootStore } from '@/store/hook'
 
 interface ViewsProps {
   pageContainerType?: 'default' | 'gutterless' | 'contained'
-  // layout?: LayoutType
 }
 
 type AllRoutesProps = ViewsProps
@@ -19,7 +18,8 @@ type AllRoutesProps = ViewsProps
 const { authenticatedEntryPath } = appConfig
 
 const AllRoutes = (props: AllRoutesProps) => {
-  const userAuthority = useAppSelector((state) => state.auth.user.role)
+  const { authStore } = useRootStore()
+  const userAuthority = authStore.user.role
 
   return (
     <Routes>
@@ -37,11 +37,11 @@ const AllRoutes = (props: AllRoutesProps) => {
                 userAuthority={userAuthority}
                 authority={route.authority}
               >
-                  <AppRoute
-                    routeKey={route.key}
-                    component={route.component}
-                    {...route.authority}
-                  />
+                <AppRoute
+                  routeKey={route.key}
+                  component={route.component}
+                  {...route.authority}
+                />
               </AuthorityGuard>
             }
           />

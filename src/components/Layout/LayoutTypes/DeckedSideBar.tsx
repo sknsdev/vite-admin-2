@@ -1,36 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { UnstyledButton, Tooltip, Title, rem } from '@mantine/core';
-import classes from './DeckedSideBar.module.css';
-import SimpleSideBarBottomContent from '@/components/Layout/LayoutTypes/SimpleSideBarBottomContent';
-import navigationConfig from '@/configs/navigation.config';
-import { Link, useLocation } from 'react-router-dom';
-import Views from '@/components/Layout/Views';
-import { useTranslation } from 'react-i18next';
-import AuthorityCheck from '@/route/AuthorityCheck';
-import { useAppSelector } from '@/store';
+import React, { useEffect, useState } from 'react'
+import { UnstyledButton, Tooltip, Title, rem } from '@mantine/core'
+import classes from './DeckedSideBar.module.css'
+import SimpleSideBarBottomContent from '@/components/Layout/LayoutTypes/SimpleSideBarBottomContent'
+import navigationConfig from '@/configs/navigation.config'
+import { Link, useLocation } from 'react-router-dom'
+import Views from '@/components/Layout/Views'
+import { useTranslation } from 'react-i18next'
+import AuthorityCheck from '@/route/AuthorityCheck'
+import { useRootStore } from '@/store/hook'
 
 function DeckedSideBarContent() {
-  const [activeMainLink, setActiveMainLink] = useState('');
-  const [activeSubLink, setActiveSubLink] = useState('');
-  const [title, setTitle] = useState('');
-  const location = useLocation();
-  const { t } = useTranslation();
-  const userAuthority = useAppSelector((state) => state.auth.user.role);
+  const [activeMainLink, setActiveMainLink] = useState('')
+  const [activeSubLink, setActiveSubLink] = useState('')
+  const [title, setTitle] = useState('')
+  const location = useLocation()
+  const { t } = useTranslation()
+  const { authStore } = useRootStore()
+  const userAuthority = authStore.user.role
 
   useEffect(() => {
-    const currentPath = location.pathname.split('/');
-    const currentMainLink = currentPath[1];
-    const currentSubLink = currentPath[2];
+    const currentPath = location.pathname.split('/')
+    const currentMainLink = currentPath[1]
+    const currentSubLink = currentPath[2]
 
-    setActiveMainLink(currentMainLink);
-    setActiveSubLink(currentSubLink);
-    setTitle(currentMainLink.toUpperCase());
-  }, [location.pathname]);
+    setActiveMainLink(currentMainLink)
+    setActiveSubLink(currentSubLink)
+    setTitle(currentMainLink.toUpperCase())
+  }, [location.pathname])
 
   const handleMainLinkClick = (mainLink: string, title: string, translateKey: string) => {
-    setActiveMainLink(mainLink.split('/')[1]);
-    setTitle(translateKey ? t(translateKey) : title);
-  };
+    setActiveMainLink(mainLink.split('/')[1])
+    setTitle(translateKey ? t(translateKey) : title)
+  }
 
   return (
     <nav className={classes.navbar}>
@@ -100,7 +101,7 @@ function DeckedSideBarContent() {
                             : submenuItem.title}
                         </Link>
                       </AuthorityCheck>
-                    );
+                    )
                   })}
                 </div>
               ))}
@@ -112,7 +113,7 @@ function DeckedSideBarContent() {
         </div>
       </div>
     </nav>
-  );
+  )
 }
 
 export default function DeckedSideBar() {
@@ -137,5 +138,5 @@ export default function DeckedSideBar() {
         <Views />
       </div>
     </div>
-  );
+  )
 }

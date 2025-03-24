@@ -1,14 +1,14 @@
-import '@mantine/core/styles.css';
-import { MantineProvider } from '@mantine/core';
-import { theme } from './theme';
-import { Layout } from '@/components/Layout/Layout';
-import { Provider } from 'react-redux';
-import store, { persistor } from '@/store';
-import { PersistGate } from 'redux-persist/integration/react';
-import { BrowserRouter } from 'react-router-dom';
-import appConfig from './configs/app.config';
-import { mockServer } from './mock/mock';
-import { ModalsProvider } from '@mantine/modals';
+import '@mantine/core/styles.css'
+import { MantineProvider } from '@mantine/core'
+import { theme } from './theme'
+import { Layout } from '@/components/Layout/Layout'
+import { BrowserRouter } from 'react-router-dom'
+import appConfig from './configs/app.config'
+import { mockServer } from './mock/mock'
+import { ModalsProvider } from '@mantine/modals'
+import { StoreProvider } from './contexts/StoreContext'
+import { rootStore } from './store'
+import BaseService, { setUnauthorizedHandler } from './services/BaseService'
 
 export default function App() {
   /**
@@ -16,20 +16,18 @@ export default function App() {
    * If you wish to enable mock api
    */
   if (appConfig.enableMock) {
-    mockServer();
+    mockServer()
   }
 
   return (
     <MantineProvider theme={theme}>
       <ModalsProvider>
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <BrowserRouter>
-              <Layout />
-            </BrowserRouter>
-          </PersistGate>
-        </Provider>
+        <StoreProvider value={rootStore}>
+          <BrowserRouter>
+            <Layout />
+          </BrowserRouter>
+        </StoreProvider>
       </ModalsProvider>
     </MantineProvider>
-  );
+  )
 }

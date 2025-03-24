@@ -36,6 +36,7 @@ export default function SignIn() {
     setLoading(true)
     try {
       const res = await signIn(values)
+      console.log(res)
     } catch (e) {
       console.log(e)
     } finally {

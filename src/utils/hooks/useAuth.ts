@@ -1,41 +1,31 @@
-import {
-  setUser,
-  signInSuccess,
-  signOutSuccess,
-  useAppSelector,
-  useAppDispatch, setUserInfo, setUserId
-} from '@/store'
+import { useRootStore } from '@/store/hook'
 import appConfig from '@/configs/app.config'
-import {REDIRECT_URL_KEY} from '@/constants/app.constant'
-import {useNavigate} from 'react-router-dom'
-import {SignInCredential, SignUpCredential} from '@/@types/auth'
-import {AuthService} from "@/services/auth/auth.service";
+import { REDIRECT_URL_KEY } from '@/constants/app.constant'
+import { useNavigate } from 'react-router-dom'
+import { SignInCredential, SignUpCredential } from '@/@types/auth'
+import { AuthService } from "@/services/auth/auth.service"
 import useQuery from './useQuery'
 
 type Status = 'success' | 'failed'
 
 function useAuth() {
-  const dispatch = useAppDispatch()
+  const { authStore } = useRootStore()
   const navigate = useNavigate()
-  const {
-    token,
-    signedIn
-  } = useAppSelector((state) => state.auth.session)
-  const userId = useAppSelector(state => state.auth.userInfo.userId)
   const query = useQuery()
 
   const signIn = async (
     values: SignInCredential
   ): Promise<
     | {
-    status: Status
-    message: string
-  }
+      status: Status
+      message: string
+    }
     | undefined
   > => {
     try {
+      console.log('Sign in')
       const resp = await AuthService.signIn(values.email, values.password)
-      dispatch(setUserId(resp.id))
+      console.log('resp:')
       const {
         access_token,
         id,
@@ -43,21 +33,19 @@ function useAuth() {
         fullName,
         phoneNumber
       } = resp
-      dispatch(signInSuccess({
+      authStore.userInfo.setUserId(id)
+      authStore.session.signInSuccess({
         token: access_token,
         refreshToken: '',
         expireTime: 0
-      }))
-      dispatch(
-        setUser(
-          {
-            fullName: fullName,
-            email: email,
-            role: resp.authority,
-            phoneNumber: phoneNumber
-          }
-        )
-      )
+      })
+      authStore.user.setUser({
+        fullName,
+        email,
+        role: resp.authority,
+        phoneNumber
+      })
+
       const redirectUrl = query.get(REDIRECT_URL_KEY)
       navigate(redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath)
       return {
@@ -79,7 +67,6 @@ function useAuth() {
     //     status: 'success',
     //     message: ''
     //   }
-    //   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     // } catch (errors: any) {
     //   return {
     //     status: 'failed',
@@ -89,21 +76,19 @@ function useAuth() {
   }
 
   const handleSignOut = () => {
-    dispatch(signOutSuccess())
-    dispatch(setUserInfo({
+    authStore.session.signOutSuccess()
+    authStore.userInfo.setUserInfo({
       googleLogin: false,
       name: '',
       role: '',
       email: '',
-      userId: userId
-    }))
-    dispatch(
-      setUser({
-        fullName: '',
-        role: [],
-        email: ''
-      })
-    )
+      userId: authStore.userInfo.userId
+    })
+    authStore.user.setUser({
+      fullName: '',
+      role: [],
+      email: ''
+    })
     navigate(appConfig.unAuthenticatedEntryPath)
   }
 
@@ -113,7 +98,7 @@ function useAuth() {
   }
 
   return {
-    authenticated: token && signedIn,
+    authenticated: authStore.session.token && authStore.session.signedIn,
     signIn,
     signUp,
     signOut,

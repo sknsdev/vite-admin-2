@@ -1,11 +1,11 @@
-import {lazy} from 'react'
+import SignIn from '@/pages/auth/SignIn'
 import type {Routes} from '@/@types/routes'
 
 const authRoute: Routes = [
   {
     key: 'signIn',
     path: `/sign-in`,
-    component: lazy(() => import('@/pages/auth/SignIn')),
+    component: SignIn,
     authority: []
   },
   // {

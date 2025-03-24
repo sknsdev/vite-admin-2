@@ -1,37 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import Views from '@/components/Layout/Views';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import navigationConfig from '@/configs/navigation.config';
-import { LinksGroup } from '@/components/Layout/LinksGroup';
-import classes from '@/components/Layout/LayoutTypes/SimpleSideBar.module.css';
-import {Box, Card, Group} from '@mantine/core';
-import SimpleSideBarBottomContent from '@/components/Layout/LayoutTypes/SimpleSideBarBottomContent';
-import { useTranslation } from 'react-i18next';
-import AuthorityCheck from '@/route/AuthorityCheck';
-import { useAppSelector } from '@/store';
+import React, { useEffect, useState } from 'react'
+import Views from '@/components/Layout/Views'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import navigationConfig from '@/configs/navigation.config'
+import { LinksGroup } from '@/components/Layout/LinksGroup'
+import classes from '@/components/Layout/LayoutTypes/SimpleSideBar.module.css'
+import { Box, Card, Group } from '@mantine/core'
+import SimpleSideBarBottomContent from '@/components/Layout/LayoutTypes/SimpleSideBarBottomContent'
+import { useTranslation } from 'react-i18next'
+import AuthorityCheck from '@/route/AuthorityCheck'
+import { useRootStore } from '@/store/hook'
 
 function SideBar() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [active, setActive] = useState('');
-  const { t } = useTranslation();
-  const userAuthority = useAppSelector((state) => state.auth.user.role);
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [active, setActive] = useState('')
+  const { t } = useTranslation()
+  const { authStore } = useRootStore()
+  const userAuthority = authStore.user.role
 
   useEffect(() => {
-    const currentPath = location.pathname.split('/')[1];
-    setActive(currentPath);
-  }, [location.pathname]);
+    const currentPath = location.pathname.split('/')[1]
+    setActive(currentPath)
+  }, [location.pathname])
 
   const links = navigationConfig.map((item, index) => {
-    let links = [];
+    let links = []
 
     if (item.subMenu && item.subMenu.length > 0) {
       links = item.subMenu.map((i) => ({
         label: i.title,
         link: i.path,
         authority: i.authority,
-      }));
-      const isAnyLinkActive = links.some((link) => location.pathname.includes(link.link));
+      }))
+      const isAnyLinkActive = links.some((link) => location.pathname.includes(link.link))
 
       return (
         <AuthorityCheck
@@ -40,15 +41,15 @@ function SideBar() {
           key={index}
         >
           <Box ml={10} my={10}>
-          <LinksGroup
-            initiallyOpened={isAnyLinkActive}
-            icon={item.icon}
-            label={item.title}
-            links={links}
-          />
+            <LinksGroup
+              initiallyOpened={isAnyLinkActive}
+              icon={item.icon}
+              label={item.title}
+              links={links}
+            />
           </Box>
         </AuthorityCheck>
-      );
+      )
     } else {
       return (
         <AuthorityCheck
@@ -61,18 +62,18 @@ function SideBar() {
             data-active={item.path.split('/')[1] === active ? 'true' : undefined}
             to={item.path}
             onClick={(event) => {
-              event.preventDefault();
-              setActive(item.path.split('/')[1]);
-              navigate(item.path);
+              event.preventDefault()
+              setActive(item.path.split('/')[1])
+              navigate(item.path)
             }}
           >
             <item.icon className={classes.linkIcon} stroke={1.5} />
             <span>{item.translateKey ? t(item.translateKey) : item.title}</span>
           </Link>
         </AuthorityCheck>
-      );
+      )
     }
-  });
+  })
 
   return (
     <nav className={classes.navbar}>
@@ -82,9 +83,9 @@ function SideBar() {
         </Group>
         {links}
       </div>
-        <SimpleSideBarBottomContent />
+      <SimpleSideBarBottomContent />
     </nav>
-  );
+  )
 }
 
 export default function SimpleSideBar() {
@@ -125,5 +126,5 @@ export default function SimpleSideBar() {
         </Card>
       </div>
     </div>
-  );
+  )
 }
